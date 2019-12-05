@@ -14,7 +14,7 @@
 <meta property="og:site_name" content="403 Forbidden">
 <meta property="og:description" content="初级装备SMTP对象创建函数，以QQ邮箱为例 host: 服务器主机地址，懒得DNS找IP用域名就好 port: SMTP服务端口号，一般&#x2F;默认为25 local: 本机即指定localhost即可 1import smtplib23&amp;#x2F;&amp;#x2F;smtpObj &amp;#x3D; smtplib.SMTP( [host [, port [, local_hostname]]] )4smtpO">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-12-05T06:08:31.966Z">
+<meta property="og:updated_time" content="2019-12-05T06:38:43.825Z">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="403 Forbidden" type="application/atom+xml">
@@ -65,7 +65,7 @@
         <section id="main"><article id="post-SMTP" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/12/05/SMTP/" class="article-date">
-  <time datetime="2019-12-05T06:08:31.966Z" itemprop="datePublished">2019-12-05</time>
+  <time datetime="2019-12-05T06:38:43.825Z" itemprop="datePublished">2019-12-05</time>
 </a>
     
   </div>
@@ -94,6 +94,7 @@
 
 <p>网易及腾讯邮箱为安全而使用SSH协议，收发服务器端口号为465/994</p>
 <p>创建函数亦可为</p>
+<a id="more"></a>
 <p><code>smtpObj = smtplib.SMTP_SSL(&#39;smtp.qq.com&#39;,465,&#39;localhost&#39;)</code></p>
 <p>但465成功发送，994报错</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Traceback (most recent call last):</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">  File &quot;D:&#x2F;code&#x2F;python&#x2F;three&#x2F;one.py&quot;, line 41, in &lt;module&gt;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    smtp &#x3D; smtplib.SMTP_SSL(&#39;smtp.qq.com&#39;,994,&#39;localhost&#39;)  </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"> ...</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"> ...</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"> 各种smtplib和socket的报错</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"> ...</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"> ...</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"> TimeoutError: [WinError 10060] 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。</span></pre></td></tr></table></figure>
@@ -136,7 +137,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/12/05/SMTP/" data-id="ck3sbr9b30000vily0oz2gmgy" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/12/05/SMTP/" data-id="ck3scnosd0000yily5lgtg4w3" class="article-share-link">Share</a>
       
       
     </footer>
