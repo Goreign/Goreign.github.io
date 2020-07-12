@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/xuejie.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/xuejie.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="这是一个下雨的清晨，雨还有些大，却不嘈杂。运维的考核结束了，我决定以这篇blog开启这个重要又忙碌的暑假。上一篇是寒假考核。nginx的插件。这回写了一个虚拟机，说实话没有上次痛快，上次翻阅众多文献才略懂，这回。。不用什么资料，但我没怎么写，因为我忙着谈恋爱去了。短短几个月我的人生又发生一些巨大的变化，我却没有手足无措，或许是一种适应。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个基于register的VM">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2020&#x2F;07&#x2F;13&#x2F;VM&#x2F;index.html">
+<meta property="og:site_name" content="403 Forbidden">
+<meta property="og:description" content="这是一个下雨的清晨，雨还有些大，却不嘈杂。运维的考核结束了，我决定以这篇blog开启这个重要又忙碌的暑假。上一篇是寒假考核。nginx的插件。这回写了一个虚拟机，说实话没有上次痛快，上次翻阅众多文献才略懂，这回。。不用什么资料，但我没怎么写，因为我忙着谈恋爱去了。短短几个月我的人生又发生一些巨大的变化，我却没有手足无措，或许是一种适应。">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2020-07-12T22:19:11.282Z">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/07/13/VM/"/>
+
+
+
+
+
+  <title>一个基于register的VM | 403 Forbidden</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">403 Forbidden</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/13/VM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Goreign">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/kakashi.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="403 Forbidden">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">一个基于register的VM</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-13T06:18:50+08:00">
+                2020-07-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这是一个下雨的清晨，雨还有些大，却不嘈杂。<br>运维的考核结束了，我决定以这篇blog开启这个重要又忙碌的暑假。<br>上一篇是寒假考核。nginx的插件。<br>这回写了一个虚拟机，说实话没有上次痛快，上次翻阅众多文献才略懂，这回。。不用什么资料，但我没怎么写，因为我忙着谈恋爱去了。<br>短短几个月我的人生又发生一些巨大的变化，我却没有手足无措，或许是一种适应。</p>
+<a id="more"></a>
+<p>以下头文字D，其他该写的都放在README里了。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> once</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> program[<span class="number">16</span>];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment">int decToBin(int dec) &#123; </span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment">	int result = 0, temp = dec, j = 1;	</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment">	while (temp) &#123; </span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment">		result = result + j * (temp % 2);		</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment">		temp = temp / 2;		</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="comment">		j = j * 10; </span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="comment">	&#125;	</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"><span class="comment">	return result; </span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line"><span class="comment">&#125;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"><span class="comment">*/</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"><span class="comment">//INSTRUCTION TABLE</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> LOAD_A  =  <span class="number">0b0010</span>;  <span class="comment">//  2</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> LOAD_B  =  <span class="number">0b0001</span>;  <span class="comment">//  1</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> STORE_A =  <span class="number">0b0100</span>;  <span class="comment">//  4</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> ADD     =  <span class="number">0b1000</span>;  <span class="comment">//  8</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> SUB     =  <span class="number">0b1100</span>;  <span class="comment">// 12</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> MULTI   =  <span class="number">0b1110</span>;  <span class="comment">// 14</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> DEVIDE  =  <span class="number">0b1111</span>;  <span class="comment">// 15</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line"><span class="comment">//指令寄存器的前四位为操作码，后四位为RAM/register地址</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">instruction_register</span> &#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line">	<span class="keyword">int</span> opcode;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">	<span class="keyword">int</span> address;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line">&#125;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line"><span class="comment">//几个寄存器</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">enum</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line">	A,B,C,D,E,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line">	NUM_OF_RGT</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line">&#125;RGT;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/*  </span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line"><span class="comment"></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">37</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *  修改寄存器的值</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">38</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *  int RGT[NUM_OF_RGT];</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">39</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *  RGT[A] = 2;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">40</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">41</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">42</span></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">VirtualMachine</span> &#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">43</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span>:</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">44</span></pre></td><td class="code"><pre><span class="line">	<span class="keyword">int</span> RAM[<span class="number">16</span>];                      <span class="comment">//内存</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">45</span></pre></td><td class="code"><pre><span class="line">	instruction_register IR;          <span class="comment">//指令寄存器</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">46</span></pre></td><td class="code"><pre><span class="line">	<span class="keyword">int</span> instruction_address_register; <span class="comment">//指令地址寄存器</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">47</span></pre></td><td class="code"><pre><span class="line">	<span class="keyword">int</span> ALU;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">48</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span>:</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">49</span></pre></td><td class="code"><pre><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">Fetch</span><span class="params">(<span class="keyword">int</span> *a)</span></span>;               <span class="comment">//读取指令</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">50</span></pre></td><td class="code"><pre><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">Decode_Execute</span><span class="params">()</span></span>;            <span class="comment">//指令译码&amp;&amp;执行指令</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">51</span></pre></td><td class="code"><pre><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">printf</span><span class="params">()</span></span>;                    <span class="comment">//打印指令</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">52</span></pre></td><td class="code"><pre><span class="line">&#125;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">53</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> VirtualMachine::Fetch(<span class="keyword">int</span> *a) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">54</span></pre></td><td class="code"><pre><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"\n开始载入指令"</span> &lt;&lt; <span class="built_in">endl</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">55</span></pre></td><td class="code"><pre><span class="line">	</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">56</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">57</span></pre></td><td class="code"><pre><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">16</span> ; i++) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">58</span></pre></td><td class="code"><pre><span class="line">		</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">59</span></pre></td><td class="code"><pre><span class="line">		RAM[i] = a[i]; </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">60</span></pre></td><td class="code"><pre><span class="line">	&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">61</span></pre></td><td class="code"><pre><span class="line">	</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">62</span></pre></td><td class="code"><pre><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"载入完成\n"</span> &lt;&lt; <span class="built_in">endl</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">63</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">64</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">65</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> VirtualMachine::<span class="built_in">printf</span>() &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">66</span></pre></td><td class="code"><pre><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"打印将处理的指令"</span> &lt;&lt; <span class="built_in">endl</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">67</span></pre></td><td class="code"><pre><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">16</span> &amp;&amp; RAM[i] != <span class="number">0</span>; i++) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">68</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">if</span> (i &lt; <span class="number">10</span>) <span class="built_in">cout</span> &lt;&lt; <span class="string">"0"</span> &lt;&lt; i &lt;&lt; <span class="string">"\t"</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">69</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">else</span> <span class="built_in">cout</span> &lt;&lt; i &lt;&lt; <span class="string">"\t"</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">70</span></pre></td><td class="code"><pre><span class="line">		<span class="built_in">cout</span> &lt;&lt; RAM[i] / <span class="number">1000</span> &lt;&lt; RAM[i] / <span class="number">100</span> % <span class="number">10</span> &lt;&lt; RAM[i] % <span class="number">100</span> / <span class="number">10</span> &lt;&lt; RAM[i] % <span class="number">100</span> % <span class="number">10</span> &lt;&lt; <span class="built_in">endl</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">71</span></pre></td><td class="code"><pre><span class="line">	&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">72</span></pre></td><td class="code"><pre><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"打印完成\n"</span> &lt;&lt; <span class="built_in">endl</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">73</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">74</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">75</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> VirtualMachine::Decode_Execute() &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">76</span></pre></td><td class="code"><pre><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"开始运行"</span> &lt;&lt; <span class="built_in">endl</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">77</span></pre></td><td class="code"><pre><span class="line">	<span class="keyword">int</span> RGT[NUM_OF_RGT];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">78</span></pre></td><td class="code"><pre><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">16</span> &amp;&amp; RAM[i] != <span class="number">0</span>; i++) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">79</span></pre></td><td class="code"><pre><span class="line">		IR.opcode = RAM[i]/<span class="number">100</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">80</span></pre></td><td class="code"><pre><span class="line">		IR.address = RAM[i] % <span class="number">100</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">81</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">int</span> register_former = IR.address / <span class="number">10</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">82</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">int</span> register_latter = IR.address % <span class="number">10</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">83</span></pre></td><td class="code"><pre><span class="line"><span class="comment">//		cout &lt;&lt; IR.opcode &lt;&lt; "\t" &lt;&lt; IR.address&lt;&lt;"\t";</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">84</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">switch</span> (IR.opcode)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">85</span></pre></td><td class="code"><pre><span class="line">		&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">86</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">case</span>(LOAD_A):</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">87</span></pre></td><td class="code"><pre><span class="line">			RGT[A] = RAM[IR.address];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">88</span></pre></td><td class="code"><pre><span class="line">			<span class="built_in">cout</span> &lt;&lt; RGT[A] &lt;&lt;<span class="built_in">endl</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">89</span></pre></td><td class="code"><pre><span class="line">			<span class="keyword">break</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">90</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">case</span>(LOAD_B):</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">91</span></pre></td><td class="code"><pre><span class="line">			RGT[B] = RAM[IR.address];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">92</span></pre></td><td class="code"><pre><span class="line">			<span class="built_in">cout</span> &lt;&lt; RGT[B] &lt;&lt; <span class="built_in">endl</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">93</span></pre></td><td class="code"><pre><span class="line">			<span class="keyword">break</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">94</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">case</span>(STORE_A):</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">95</span></pre></td><td class="code"><pre><span class="line">			RAM[IR.address] = RGT[A];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">96</span></pre></td><td class="code"><pre><span class="line">			<span class="built_in">cout</span> &lt;&lt; RAM[IR.address] &lt;&lt;<span class="built_in">endl</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">97</span></pre></td><td class="code"><pre><span class="line">			<span class="keyword">break</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">98</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">case</span>(ADD):    	</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">99</span></pre></td><td class="code"><pre><span class="line">			RGT[register_latter] += RGT[register_former];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">100</span></pre></td><td class="code"><pre><span class="line">			<span class="built_in">cout</span> &lt;&lt; RGT[A] &lt;&lt; <span class="built_in">endl</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">101</span></pre></td><td class="code"><pre><span class="line">			<span class="keyword">break</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">102</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">case</span>(SUB):</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">103</span></pre></td><td class="code"><pre><span class="line">			RGT[register_latter] -= RGT[register_former];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">104</span></pre></td><td class="code"><pre><span class="line">			<span class="built_in">cout</span> &lt;&lt; RGT[B] &lt;&lt; <span class="built_in">endl</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">105</span></pre></td><td class="code"><pre><span class="line">			<span class="keyword">break</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">106</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">case</span>(MULTI):</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">107</span></pre></td><td class="code"><pre><span class="line">			RGT[register_latter] *= RGT[register_former];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">108</span></pre></td><td class="code"><pre><span class="line">			<span class="built_in">cout</span> &lt;&lt; RGT[B] &lt;&lt; <span class="built_in">endl</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">109</span></pre></td><td class="code"><pre><span class="line">			<span class="keyword">break</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">110</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">case</span>(DEVIDE):</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">111</span></pre></td><td class="code"><pre><span class="line">			RGT[register_latter] /= RGT[register_former];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">112</span></pre></td><td class="code"><pre><span class="line">			<span class="built_in">cout</span> &lt;&lt; RGT[B] &lt;&lt; <span class="built_in">endl</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">113</span></pre></td><td class="code"><pre><span class="line">			<span class="keyword">break</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">114</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">default</span>:</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">115</span></pre></td><td class="code"><pre><span class="line">			<span class="keyword">break</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">116</span></pre></td><td class="code"><pre><span class="line">		&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">117</span></pre></td><td class="code"><pre><span class="line">	&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">118</span></pre></td><td class="code"><pre><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"运行结束"</span> &lt;&lt; <span class="built_in">endl</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">119</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">120</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span>* <span class="title">InputData</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">121</span></pre></td><td class="code"><pre><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="string">"指令，输入exit以结束"</span> &lt;&lt; <span class="built_in">endl</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">122</span></pre></td><td class="code"><pre><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">16</span>; i++) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">123</span></pre></td><td class="code"><pre><span class="line">		<span class="built_in">cin</span> &gt;&gt; program[i];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">124</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">if</span> (!<span class="built_in">cin</span>.good())   <span class="comment">//判断是否输入类型为int，不是则退出循环</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">125</span></pre></td><td class="code"><pre><span class="line">			<span class="keyword">break</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">126</span></pre></td><td class="code"><pre><span class="line">	&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">127</span></pre></td><td class="code"><pre><span class="line">	<span class="keyword">return</span> program;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">128</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<p>被大姐姐骗了，但长得乖对我好，所以就不追究骗我的事实了。<br>这善变的人世间，我也想和你看一看永恒。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/08/ngx-module/" rel="next" title="ngx_http_markdown_html_module">
+                <i class="fa fa-chevron-left"></i> ngx_http_markdown_html_module
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/kakashi.jpg"
+                alt="Goreign" />
+            
+              <p class="site-author-name" itemprop="name">Goreign</p>
+              <p class="site-description motion-element" itemprop="description">愿做你的不眠人  为你守望昏与晨</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+
+      
+
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=298 height=52 src="//music.163.com/outchain/player?type=2&id=32303005&auto=0&height=32"></iframe>
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Goreign</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
