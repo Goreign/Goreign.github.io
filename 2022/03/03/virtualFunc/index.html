@@ -75,14 +75,14 @@
 
 
 
-<meta name="description" content="我已很久没有念诗与读书了，可怕的是我竟今日才意识到。有时我也感到胸膛中翻涌的思潮，却无法言说，于是我才想到——我已很久没有念诗与读书了。">
+<meta name="description" content="太久没写笔记，这绝对是个错误的决定。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="普通冬末春初的夜晚">
-<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2022&#x2F;02&#x2F;16&#x2F;22newYear&#x2F;index.html">
+<meta property="og:title" content="this指针与虚函数相关">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2022&#x2F;03&#x2F;03&#x2F;virtualFunc&#x2F;index.html">
 <meta property="og:site_name" content="403 Forbidden">
-<meta property="og:description" content="我已很久没有念诗与读书了，可怕的是我竟今日才意识到。有时我也感到胸膛中翻涌的思潮，却无法言说，于是我才想到——我已很久没有念诗与读书了。">
+<meta property="og:description" content="太久没写笔记，这绝对是个错误的决定。">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2022-02-16T11:53:11.406Z">
+<meta property="og:updated_time" content="2022-03-03T09:11:07.834Z">
 <meta name="twitter:card" content="summary">
 
 
@@ -113,13 +113,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2022/02/16/22newYear/"/>
+  <link rel="canonical" href="http://yoursite.com/2022/03/03/virtualFunc/"/>
 
 
 
 
 
-  <title>普通冬末春初的夜晚 | 403 Forbidden</title>
+  <title>this指针与虚函数相关 | 403 Forbidden</title>
   
 
 
@@ -236,7 +236,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/02/16/22newYear/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/03/03/virtualFunc/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Goreign">
@@ -253,7 +253,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">普通冬末春初的夜晚</h1>
+          <h1 class="post-title" itemprop="name headline">this指针与虚函数相关</h1>
         
 
         <div class="post-meta">
@@ -265,8 +265,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2022-02-16T19:48:43+08:00">
-                2022-02-16
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2022-03-03T17:08:18+08:00">
+                2022-03-03
               </time>
             
 
@@ -303,10 +303,35 @@
       
 
       
-        <p>我已很久没有念诗与读书了，可怕的是我竟今日才意识到。<br>有时我也感到胸膛中翻涌的思潮，却无法言说，于是我才想到——我已很久没有念诗与读书了。</p>
+        <p>太久没写笔记，这绝对是个错误的决定。</p>
 <a id="more"></a>
-<p>我又读了《Hamlet》，而我却还读不了原著，可悲可叹，已过了四年，仿佛没有一点进步，字也没有先前写的规整。<br>长大了发现我并没有自己以为的那般正直，我从不敢说学习那些知识，没有一部分是为钱的心情所驱动。这或许是虚伪，或许也带着一点身不由己，但好像也没有人能逃避。<br>我总期望自己是一块钢铁，但我已明白钢铁没有韧性，所以他脆且易折，往往只剩下凄惨收尾。</p>
-<p>正月十五的第二天<br>我望了一眼窗外，太阳已落下，我想尽快把灯熄灭，随天空隐没在黑夜里静思。</p>
+<h4 id="this指针"><a href="#this指针" class="headerlink" title="this指针"></a>this指针</h4><p>一个类的函数放在代码区，创建一个对象，开辟一块内存，不会把所有该类的成员函数全和他一起存在内存里。不然就爆炸了。所以一个类的成员函数只在代码区存在一次， 同一个类的对象共用这段代码</p>
+<p>那如果一个类A有func()，该类实例化两个对象a和b，都调用func()，调用的是同一个func()，func()如何知道是a还是b调用的呢</p>
+<p><strong>每个对象都拥有一个指针：this指针，通过this指针来访问自己的地址，这是每一个成员函数的隐含参数，调用成员函数时要把this传过去</strong></p>
+<p> <code>a.func()</code> 会被编译器翻译为 <code>A::func(&amp;a)</code>，也就是<code>A* const this</code>, this 就是 a 对象的地址。 </p>
+<p>在成员函数内部，它可以用来指向调用对象。</p>
+<p>this只能在成员函数中使用</p>
+<p>this指针不能在静态函数中用<br>静态函数如同静态变量一样，他不属于具体的哪一个对象，静态函数表示了整个类范围意义上的信息，而this指针却实实在在的对应一个对象，所以this指针不能被静态函数使用。</p>
+<p>this指针的创建<br>this指针在成员函数的开始执行前构造的，在成员的执行结束后清除。<br>所以不能通过对象使用this指针，只在成员函数里才有this指针 </p>
+<p>this是一个指针，<br>它时时刻刻指向你这个实例本身。 </p>
+<h4 id="静态函数"><a href="#静态函数" class="headerlink" title="静态函数"></a>静态函数</h4><p>一开始就存在于静态区，直到程序结束，如果调用很多次，不会像其他函数一样需要在栈区压栈出栈很多次。速度快</p>
+<h4 id="虚函数与虚表"><a href="#虚函数与虚表" class="headerlink" title="虚函数与虚表"></a>虚函数与虚表</h4><p>只要有虚函数的类，就有一个虚表，只有一个，所有对象共用，有this指针找到成员函数，所以也有一个虚函数指针来找到虚函数，他就是 <code>*__vptr</code> ，指向类的虚表</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="class">&#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span>:</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">func1</span><span class="params">()</span> </span>&#123; <span class="built_in">cout</span> &lt;&lt; <span class="string">"A func1"</span> &lt;&lt; <span class="built_in">endl</span>; &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">vfunc1</span><span class="params">()</span> </span>&#123; <span class="built_in">cout</span> &lt;&lt; <span class="string">"A vfunc1"</span> &lt;&lt; <span class="built_in">endl</span>; &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span>:</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">int</span> m_a;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">int</span> m_b;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">&#125;;</span></pre></td></tr></table></figure>
+
+<p>sizeof(A)是12，两个int字节<code>+</code>一个4字节的<code>*__vptr</code></p>
+<p> 虚表是一个函数指针数组， 虚表调用虚函数的过程称为动态绑定，传统的函数调用是静态绑定，即函数的调用在编译阶段就可以确定下来了。 </p>
+<p> <a href="https://zhuanlan.zhihu.com/p/353260837" target="_blank" rel="noopener">虚函数，虚表深度剖析 - 知乎 (zhihu.com)</a> </p>
+<p> <a href="https://zhuanlan.zhihu.com/p/75172640" target="_blank" rel="noopener">C++ 虚函数表剖析 - 知乎 (zhihu.com)</a> </p>
+<h4 id="动态绑定"><a href="#动态绑定" class="headerlink" title="动态绑定"></a>动态绑定</h4><p>什么时候会执行函数的动态绑定？这需要符合以下三个条件。</p>
+<ul>
+<li>通过指针来调用函数</li>
+<li>指针upcast向上转型（继承类向基类的转换称为upcast，关于什么是upcast，可以参考本文的参考资料）</li>
+<li>调用的是虚函数</li>
+</ul>
+<p>动态绑定与多态密不可分</p>
+<h4 id="纯虚函数"><a href="#纯虚函数" class="headerlink" title="纯虚函数"></a>纯虚函数</h4><p>基类中又不能对虚函数给出有意义的实现</p>
+<p> <code>virtual void func() = 0;</code> </p>
+<h4 id="析构函数为虚函数"><a href="#析构函数为虚函数" class="headerlink" title="析构函数为虚函数"></a>析构函数为虚函数</h4><p>如果基类析构函数不是虚函数，基类的指针p操作派生类对象，delete p只会调用基类的析构函数，派生类不释放造成内存泄漏</p>
 
       
     </div>
@@ -331,8 +356,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/07/13/VM/" rel="next" title="一个基于register的VM">
-                <i class="fa fa-chevron-left"></i> 一个基于register的VM
+              <a href="/2022/02/16/22newYear/" rel="next" title="普通冬末春初的夜晚">
+                <i class="fa fa-chevron-left"></i> 普通冬末春初的夜晚
               </a>
             
           </div>
@@ -340,10 +365,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2022/03/03/virtualFunc/" rel="prev" title="this指针与虚函数相关">
-                this指针与虚函数相关 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -395,8 +416,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -443,6 +473,22 @@
       </section>
 
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#this指针"><span class="nav-number">1.</span> <span class="nav-text">this指针</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#静态函数"><span class="nav-number">2.</span> <span class="nav-text">静态函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#虚函数与虚表"><span class="nav-number">3.</span> <span class="nav-text">虚函数与虚表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#动态绑定"><span class="nav-number">4.</span> <span class="nav-text">动态绑定</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#纯虚函数"><span class="nav-number">5.</span> <span class="nav-text">纯虚函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#析构函数为虚函数"><span class="nav-number">6.</span> <span class="nav-text">析构函数为虚函数</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
 <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=298 height=52 src="//music.163.com/outchain/player?type=2&id=28152316&auto=0&height=32"></iframe>
